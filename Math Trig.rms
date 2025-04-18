@@ -43,41 +43,44 @@
 
 /*
  * The argument of the sine and cosine functions.
- * Must be a number in [-270, 720].
- * Individually, the sine requires x in [-360, 720], and the cosine
- * requires x in [-270, 810].
- * For this demonstration, x is chosen randomly in [0, 359].
+ * For this demonstration, INITIAL_DEG is chosen randomly.
  */
-#const INITIAL_DEG rnd(0,359)
+#const INITIAL_DEG rnd(-9999,10000)
+
+/* 
+ * The remainder r of dividing n / 360 is given by the formula:
+ * r = n - floor(n / 360) * 360
+ * However, the ROUNDED value instead equals:
+ * r = n - round(n / 360) * 360,
+ * where a 5 in the tenths place always rounds away from 0.
+ * The value is always in the interval [-180, 180].
+ */
+#const ROUNDED (INITIAL_DEG / 360 * -360 + INITIAL_DEG)
 
 /*
- * Store 1 if INITIAL_DEG < 0, 0 if INITIAL_DEG >= 0.
- *
- * Divide by 2 ten times, since 2^10 = 1024 > 720.
- * The number is -1 for negatives, 0 for 0, and 1 for positives.
- * Adding 1 makes it 0 for negatives, 1 or 2 for nonnegatives.
- * Dividing by 2 makes it 0 for negatives, 1 for nonnegatives.
- * Multiplying by -1 and adding 1 makes it 1 for negatives, 0 for nonnegatives
- * (this final step is the same as subtracting from 1).
+ * All values in the interval [-180, 180] have an absolute value less than 256 = 2^8.
+ * Because every division rounds, we have three possibilities after dividing by 2
+ * eight times:
+ * - r > 0 -> 1
+ * - r = 0 -> 0
+ * - r < 0 -> -1
+ * Add 1 to this value and divide by 2. The result is 1 if ROUNDED >= 0
+ * and 0 if ROUNDED < 0. Then subtract 1 and multiply by -1 to flip the boolean.
+ * - r > 0 -> 1 -> 2 -> 1 -> 0 -> 0
+ * - r = 0 -> 0 -> 1 -> 1 -> 0 -> 0
+ * - r < 0 -> -1 -> 0 -> 0 -> -1 -> 1
  */
-#const INITIAL_IS_NEG (INITIAL_DEG / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 * -1 + 1)
+#const ROUNDED_IS_NEGATIVE (ROUNDED / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 - 1 * -1)
 
 /*
- * The 0 or 1 of INITIAL_IS_NEG controls whether 360 is added to the
- * initial degree. This addition clamps the degree in [0, 720].
+ * Produces the degree equal to INITIAL_DEG mod 360.
+ * If the ceiling was taken in the rounding of INITIAL_DEG / 360,
+ * then ROUNDED < 0, and we correct it by adding 360.
  */
-#const NONNEG_DEG (360 * INITIAL_IS_NEG + INITIAL_DEG)
+#const CLAMPED_DEG (ROUNDED_IS_NEGATIVE * 360 + ROUNDED)
 
-/*
- * Subtract 360 to place the value in [-360, 360].
- * Divide by 2 nine times to get -1, 0, or 1.
- * Add 1 and divide by 2. The value is 0 for NONNEG_DEG < 360
- * and 1 for NONNEG_DEG >= 360.
- */
-#const INITIAL_IS_LARGE (NONNEG_DEG - 360 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2)
-
-/* The initial degree, roughly modulo 360. It is clamped to [0, 360]. */
-#const CLAMPED_DEG (-360 * INITIAL_IS_LARGE + NONNEG_DEG)
+/* In one line, avoiding the need for the ROUNDED_IS_NEGATIVE constant: */
+/* #const CLAMPED_DEG (ROUNDED / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 - 1 * -1 * 360 + ROUNDED) */
 
 /*
  * The value is 0 if CAMPLED_DEG is in [0, 179] and 1 if in [180, 360].
@@ -121,32 +124,13 @@
 #const PADDED_SIN (-2 * IS_UPPER_HALF + 1 * FRACTION)
 
 /*
- * The same process is repeated with cosine, using the formula
- * cos x = sin(90 - x),
- * where x is the angle in degrees.
- * Requires x in [-270, 810].
- */
-/* #const COS_INITIAL_DEG (90 - INITIAL_DEG)
-#const COS_INITIAL_IS_NEG (COS_INITIAL_DEG / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 * -1 + 1)
-#const COS_NONNEG_DEG (360 * COS_INITIAL_IS_NEG + COS_INITIAL_DEG)
-#const COS_INITIAL_IS_LARGE (COS_NONNEG_DEG - 360 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2)
-#const COS_CLAMPED_DEG (-360 * COS_INITIAL_IS_LARGE + COS_NONNEG_DEG)
-#const COS_IS_UPPER_HALF (COS_CLAMPED_DEG - 180 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2)
-#const COS_ARG (-180 * COS_IS_UPPER_HALF + COS_CLAMPED_DEG)
-#const COS_XCOMP (180 - COS_ARG * COS_ARG)
-#const COS_NUMERATOR (4 * COS_XCOMP * PADDING)
-#const COS_DENOMINATOR (40500 - COS_XCOMP)
-#const COS_FRACTION (COS_NUMERATOR / COS_DENOMINATOR)
-#const PADDED_COS (-2 * COS_IS_UPPER_HALF + 1 * COS_FRACTION) */
-
-/*
  * One subtle point: we can use the clamped degree from the sine calculation,
  * which is in the range [0, 360]. Then 90 - [0, 360] is [-270, 90]. Hence we
- * only need the "negative" check and do not need the "large" check for cosine.
- * This optimization can be used when calculating both sine and cosine together.
+ * only need to check whether the cosine's initial degree is negative, in
+ * which case we add 360.
  *
- * Further, we only need to divide by 2 nine times instead of 10 in the negative
- * check, since the range is [-270, 90] instead of [-360, 720], and 2^9 = 512.
+ * Further, we need to divide by 2 nine times in the negative check,
+ * since the range is [-270, 90] and 2^9 = 512.
  */
 #const COS_INITIAL_DEG (90 - CLAMPED_DEG)
 #const COS_INITIAL_IS_NEG (COS_INITIAL_DEG / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 * -1 + 1)
@@ -167,14 +151,14 @@ effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD -200
 effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD -100
 effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD -200
 
-/* The initial degree for finding the cosine and sine.. */
+/* The initial angle in degrees for finding the cosine and sine. */
 effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD INITIAL_DEG
+/* The initial angle mod 360. */
+effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD CLAMPED_DEG
 /* The cosine value. */
-effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD PADDED_COS
+effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD PADDED_COS
 /* The sine value. */
-effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD PADDED_SIN
-/* Additional debugging output. */
-/* effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD 0 */
+effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD PADDED_SIN
 
 <LAND_GENERATION>
 base_terrain GRASS

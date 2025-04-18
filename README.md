@@ -27,14 +27,13 @@ The value for cosine is calculated using the trigonometric identity $\cos{x} = \
 
 The computation proceeds in several steps:
 
-1. The input angle is taken in the range `[-360, 720]`. Implementations may expand or restrict the range based on use cases or optimization desires.
-2. The "modulus" is computed to bring the input to an equivalent angle in the range `[0, 360]`.
-3. The location of the new angle, within `[0, 179]` or `[180, 360]`, is determined, and the angle is translated to be in `[0, 180]`, if necessary.
-4. The formula is applied, with padding multiplied to the numerator to preserve digits.
-5. If necessary, the identity $-\sin{x} = \sin(-x)$ is applied if the modified angle was in the "upper half" range `[180, 360]` after the modulus was taken.
+1. The "modulus" of the input angle is computed to bring the input to an equivalent angle in the range `[0, 360]`.
+2. The location of the new angle, within `[0, 179]` or `[180, 360]`, is determined, and the angle is translated to be in `[0, 180]`, if necessary.
+3. The sine approximation formula is applied, with padding multiplied to the numerator to preserve digits.
+4. If necessary, the identity $-\sin{x} = \sin(-x)$ is applied if the modified angle was in the "upper half" range `[180, 360]` after the modulus was taken.
 
 Note the output values must be multiplied by the desired radius and then divided by the padding.
-This map script displays the calculation with Wood, Food, and Gold representing the input angle, the cosine, and the sine, respectively.
+This map script displays the calculation with Wood, Food, Gold, and Stone representing the input angle, the angle modded by 360, the cosine, and the sine, respectively.
 Flags in the middle of the map are positioned based on the calculated values.
 
 The following techniques are used:

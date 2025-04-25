@@ -30,7 +30,7 @@ We use [Bhāskara I's sine approximation](https://en.wikipedia.org/wiki/Bh%C4%81
 
 $$\sin{x} = \frac{4x(180 - x)}{40500 - x(180 - x)}.$$
 
-The value of cosing can be computed using this formula as well as the trigonometric identity
+The value of cosine can be computed using this formula along with the trigonometric identity
 
 $$\cos{x} = \sin{(90 - x)}.$$
 

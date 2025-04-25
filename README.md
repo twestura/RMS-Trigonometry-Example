@@ -38,7 +38,7 @@ The following code snipped computes the sine approximation:
 
 ```text
 #const PADDING 100000
-#const DEGREES rnd(-9999,9999) /* Argument of the sine and cosine. */
+#const DEGREES rnd(-9999,9999)
 #const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
 #const FLIP (REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
 #const ARG (FLIP * REMAINDER')
@@ -56,7 +56,7 @@ Set this constant to any number of degrees to compute the sine of the respective
 
 ### Oh For a Remainder Operator
 
-Now comes the `REMAINDER'` variable.
+Now comes the `REMAINDER'` constant.
 
 ```text
 #const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
@@ -102,11 +102,11 @@ Well we're in luck, as we can use the handy dandy trigonometric identity:
 
 $$\sin{({-x})} = -\sin{} x.$$
 
-For values $r'$ where ${-180 \le r' \le 0}$, we simply negate $r'$, compute the sine, and negate the output.
-For this, we define a variable `FLIP` such that:
+For values $r'$ where ${-180 \le r' \le 0}$, we negate $r'$, compute the sine, and negate the output.
+For this process, we define a constant `FLIP` such that:
 
-- `FLIP` equals $1$ when $r' \ge 0$,
-- `FLIP` equals $-1$ when $r' \le 0$.
+- `FLIP` equals $1$ when ${r' \ge 0}$,
+- `FLIP` equals $-1$ when ${r' < 0}$.
 
 We'll multiply by `FLIP`, and doing so will perform the negations only where necessary.
 
@@ -125,13 +125,13 @@ REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2
 ```
 
 We're left with a value that is either $1$, $0$, or ${-1}$ for ${r' > 0}$, ${r' = 0}$, and ${r' < 0}$, respectively.
-Note that, because we're relying upon the rounding, we must perform the divisions separately—we cannot simply divide by $256$.
+Because we're relying upon the rounding, we must perform the divisions separately—we cannot simply divide by $256$.
 
 Now that we've divided by $2$ eight times, what comes next?
 Multiplying by $2$ of course!
 Recall that our goal is for `FLIP` to be $1$ or ${-1}$ depending on whether ${r' \ge 0}$ or ${r' < 0}$.
 We need to handle the case where ${r' = 0}$.
-We performing the following, keeping in mind that all operators have the same precedence.:
+We performing the following, keeping in mind that all operators have the same precedence:
 
 - Multiply by $2$.
 - Add $1$.
@@ -139,11 +139,11 @@ We performing the following, keeping in mind that all operators have the same pr
 
 These operations are summarized in the following table.
 
-| Initial $r'$ Value | `/ 2` x8 | `* 2`  | `+1`  | `/ 2`  | `/ 2` |
-| ------------------ | -------- | ------ | ----- | ------ | ----- |
-| $r' > 0$           | $1$      | $2$    | $3$   | $2$    | $1$   |
-| $r' = 0$           | $0$      | $0$    | $1$   | $1$    | $1$   |
-| $r' < 0$           | ${-1}$   | ${-2}$ | ${-1} | ${-1}$ | ${-1}$ |
+| Initial $r'$ Value | `/ 2` x8 | `* 2`  | `+ 1`  | `/ 2`  | `/ 2`  |
+| -----------------: | -------: | -----: | -----: | -----: | -----: |
+| $r' > 0$           | $1$      | $2$    | $3$    | $2$    | $1$    |
+| $r' = 0$           | $0$      | $0$    | $1$    | $1$    | $1$    |
+| $r' < 0$           | ${-1}$   | ${-2}$ | ${-1}$ | ${-1}$ | ${-1}$ |
 
 And that concludes our calcuation of `FLIP`.
 
@@ -160,5 +160,4 @@ The rest of the code consists of plugging the value into the approximation formu
 
 Notable here are the two usages of `FLIP` to handle the identity ${\sin{({-x})} = -\sin{(x)}}$.
 We also apply the `PADDING` to the numerator of the fraction.
-The padding preserves decimal points, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.
-
+The padding preserves decimal precision, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.

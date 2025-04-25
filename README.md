@@ -137,6 +137,10 @@ We perform the following operations, keeping in mind that all operators have the
 - Add $1$.
 - Divide by $2$ twice.
 
+```text
+REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2
+```
+
 These operations are summarized in the following table.
 
 | Initial $r'$ Value | `/ 2` x8 | `* 2`  | `+ 1`  | `/ 2`  | `/ 2`  |

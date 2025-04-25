@@ -2,179 +2,82 @@
  * This script uses an approximation to the sine function to compute values of
  * sine and cosine. This forumla is an approximation for x in [0, 180] degrees:
  *     4x(180 - x) / (40500 - x(180 - x)).
- * In order to maintain precision with all results being rounded to the nearest
- * integer, the output of the evaluation is multiplied by 10^5.
- *
  * See this Wikipedia page for details about the approximation formula:
  * https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula
  *
  * Cosine is calculated using the formula `cos x = sin(90 - x)`.
- * The sine calculation supports angles in the range [-360, 720]. This range
- * allows both for negative values in the cosine calculation and for an extra
- * "trip" around the circle, for fixing an initial value in [0, 359] and adding
- * or subtracting more angles/points to a computation.
- *
- * Even though comparison operators are not currently supported, we still can
- * use division by 2 to determine whether values fall in specified ranges.
- * Because calculations round, repeated division by 2 yields either -1 or 1,
- * which then can be converted to 0 or 1 for negative or nonnegative values,
- * respectively. This indicator then can be used as an "if statement" in
- * subsequence expressions via multiplication.
- *
- * This implementation is intended to be a human readable example. Further
- * optimizations would be to reduce the size of constant names or to combine
- * steps and remove constants representating internal computation values.
  *
  * The map script shows output in two ways:
  * - Player resources:
  *   - Wood: The angle in degrees.
  *   - Food: The cosine of the angle, multiplied by the padding.
  *   - Gold: The sine of the angle, multiplied by the padding.
- * - The location of the flag around the center, at a position determined by
+ * - The location of the Flag around the center, at a position determined by
  *   the computed cosine and sine values.
  */
 
 /*
  * The power of 10 by which to multiply the output of the trigonometric
- * functions in order to maintain decimal points in spite of the RMS math's
- * rounding.
+ * functions in order to maintain decimal places in spite of the RMS math's
+ * rounding. Divide by this constant to use the value.
  */
 #const PADDING 100000
 
-/*
- * The argument of the sine and cosine functions.
- * For this demonstration, INITIAL_DEG is chosen randomly.
- */
-#const INITIAL_DEG rnd(-9999,10000)
+#const DEGREES rnd(-9999,9999) /* Argument of the sine and cosine. */
 
-/* 
- * The remainder r of dividing n / 360 is given by the formula:
- * r = n - floor(n / 360) * 360
- * However, the ROUNDED value instead equals:
- * r = n - round(n / 360) * 360,
- * where a 5 in the tenths place always rounds away from 0.
- * The value is always in the interval [-180, 180].
- */
-#const ROUNDED (INITIAL_DEG / 360 * -360 + INITIAL_DEG)
+/* sin(DEGREES) */
+#const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
+#const FLIP (REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
+#const ARG (FLIP * REMAINDER')
+#const ARG_SUPP (180 - ARG * ARG)
+#const DENOMINATOR (40500 - ARG_SUPP)
+#const SIN (FLIP * 4 * ARG_SUPP * PADDING / DENOMINATOR)
 
-/*
- * All values in the interval [-180, 180] have an absolute value less than 256 = 2^8.
- * Because every division rounds, we have three possibilities after dividing by 2
- * eight times:
- * - r > 0 -> 1
- * - r = 0 -> 0
- * - r < 0 -> -1
- * Add 1 to this value and divide by 2. The result is 1 if ROUNDED >= 0
- * and 0 if ROUNDED < 0. Then subtract 1 and multiply by -1 to flip the boolean.
- * - r > 0 -> 1 -> 2 -> 1 -> 0 -> 0
- * - r = 0 -> 0 -> 1 -> 1 -> 0 -> 0
- * - r < 0 -> -1 -> 0 -> 0 -> -1 -> 1
- */
-#const ROUNDED_IS_NEGATIVE (ROUNDED / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 - 1 * -1)
+/* cos(DEGREES) = sin(90 - DEGREES) */
+#const COS_DEGREES (90 - DEGREES)
+#const COS_REM' (COS_DEGREES / 360 * -360 + COS_DEGREES)
+#const COS_FLIP (COS_REM' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
+#const COS_ARG (COS_FLIP * COS_REM')
+#const COS_ARG_SUPP (180 - COS_ARG * COS_ARG)
+#const COS_DENOM (40500 - COS_ARG_SUPP)
+#const COS (COS_FLIP * 4 * COS_ARG_SUPP * PADDING / COS_DENOM)
 
-/*
- * Produces the degree equal to INITIAL_DEG mod 360.
- * If the ceiling was taken in the rounding of INITIAL_DEG / 360,
- * then ROUNDED < 0, and we correct it by adding 360.
- */
-#const CLAMPED_DEG (ROUNDED_IS_NEGATIVE * 360 + ROUNDED)
-
-/* In one line, avoiding the need for the ROUNDED_IS_NEGATIVE constant: */
-/* #const CLAMPED_DEG (ROUNDED / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 - 1 * -1 * 360 + ROUNDED) */
-
-/*
- * The value is 0 if CAMPLED_DEG is in [0, 179] and 1 if in [180, 360].
- * We divide by 2 eight times, as 2^8 = 256 > 180.
- * If the angle is in the upper half, we calculate the sin value using the 
- * formula sin(x) = -sin(x - 180). We use IS_UPPER_HALF both to fix the degree
- * to be within the range [0, 180] and also to determine whether the end result
- * must be multiplied by -1.
- *
- * Note the formula is derived from the more common trig identity:
- * sin(180 + x) = -sin x
- * sin(180 + (x - 180)) = -sin(x - 180)
- * sin x = -sin(x - 180)
- * This formula consists of shifting the sine function half a period to the left
- * and flipping it across the x-axis.
- */
-#const IS_UPPER_HALF (CLAMPED_DEG - 180 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2)
-
-/*
- * The argument to pass to the sin function.
- * The clamped degree is used if it was a lower half degree, otherwise the
- * clamped degree is shifted half a period to the left. The constant
- * `IS_UPPER_HALF` determines whether the final value of the sine needs to be
- * negated.
- */
-#const SIN_ARG (-180 * IS_UPPER_HALF + CLAMPED_DEG)
-
-/* Computes the x * (180 - x) part of the formula, where x is SIN_ARG. */
-#const XCOMP (180 - SIN_ARG * SIN_ARG)
-
-/* Computes the numerator of the formula, with padding. */
-#const NUMERATOR (4 * XCOMP * PADDING)
-
-/* Computes the denominator of the formula. */
-#const DENOMINATOR (40500 - XCOMP)
-
-/* Fractional part of the sine formula. */
-#const FRACTION (NUMERATOR / DENOMINATOR)
-
-/* Final padded sine value, negated if necessary. */
-#const PADDED_SIN (-2 * IS_UPPER_HALF + 1 * FRACTION)
-
-/*
- * One subtle point: we can use the clamped degree from the sine calculation,
- * which is in the range [0, 360]. Then 90 - [0, 360] is [-270, 90]. Hence we
- * only need to check whether the cosine's initial degree is negative, in
- * which case we add 360.
- *
- * Further, we need to divide by 2 nine times in the negative check,
- * since the range is [-270, 90] and 2^9 = 512.
- */
-#const COS_INITIAL_DEG (90 - CLAMPED_DEG)
-#const COS_INITIAL_IS_NEG (COS_INITIAL_DEG / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2 * -1 + 1)
-#const COS_CLAMPED_DEG (360 * COS_INITIAL_IS_NEG + COS_INITIAL_DEG)
-#const COS_IS_UPPER_HALF (COS_CLAMPED_DEG - 180 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 + 1 / 2)
-#const COS_ARG (-180 * COS_IS_UPPER_HALF + COS_CLAMPED_DEG)
-#const COS_XCOMP (180 - COS_ARG * COS_ARG)
-#const COS_NUMERATOR (4 * COS_XCOMP * PADDING)
-#const COS_DENOMINATOR (40500 - COS_XCOMP)
-#const COS_FRACTION (COS_NUMERATOR / COS_DENOMINATOR)
-#const PADDED_COS (-2 * COS_IS_UPPER_HALF + 1 * COS_FRACTION)
+#const RADIUS 20 /* Radius at which to place the Flag. */
+#const CENTER 59 /* Center of the Scout-Flag circle for a Tiny-sized map. */
+#const X (RADIUS * COS / PADDING + CENTER) /* X coordinate of the Flag. */
+#const Y (RADIUS * SIN / PADDING + CENTER) /* Y coordinate of the Flag. */
 
 <PLAYER_SETUP>
 direct_placement
 
+/* Clears the starting resources. */
 effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD -200
 effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD -200
 effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD -100
 effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD -200
 
-/* The initial angle in degrees for finding the cosine and sine. */
-effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD INITIAL_DEG
-/* The initial angle mod 360. */
-effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD CLAMPED_DEG
-/* The cosine value. */
-effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD PADDED_COS
-/* The sine value. */
-effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD PADDED_SIN
+effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD DEGREES
+effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD COS
+effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD SIN
+/* effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD 0 */
 
 <LAND_GENERATION>
 base_terrain GRASS
-create_land { terrain_type GRASS assign_to_player 1 land_position 0 0 }
+create_land {
+  terrain_type GRASS
+  land_position 50 50
+  assign_to_player 1
+}
 
 <OBJECTS_GENERATION>
-/* The "center" of the map. */
-create_actor_area 59 59 1 0
-/* Offset from the "center" based on the cosine and sine values. */
-create_actor_area (20 * PADDED_COS / PADDING + 59) (20 * PADDED_SIN / PADDING + 59) 2 0
+create_actor_area CENTER CENTER 1 0
+create_actor_area X Y 2 0
 
-create_object FLAG_A { actor_area_to_place_in 1 }
-create_object FLAG_B { actor_area_to_place_in 2 }
-
-/* Keeps the player alive. */
 create_object SCOUT {
   set_place_for_every_player
-  find_closest
+  actor_area_to_place_in 1
+}
+
+create_object FLAG_A {
+  actor_area_to_place_in 2
 }

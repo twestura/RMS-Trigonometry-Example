@@ -62,7 +62,8 @@ Now comes the `REMAINDER'` variable.
 #const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
 ```
 
-Since sine is periodic, we might desire the integer $r$ such that $0 \le r \le 359$ and ${\sin(r) = \sin(\mathtt{DEGREES})}$, which occurs when ${r = \mathrm{DEGREES} \bmod 360}$.
+Since sine is periodic, we might desire the integer $r$ such that $0 \le r \le 359$ and ${\sin(r) = \sin(\mathtt{DEGREES})}$, which occurs when $r$ is the remainder of `DEGREES` when divided by $360$.
+That is, ${r = \mathrm{DEGREES} \bmod 360}$.
 RMS expressions do not present a remainder operator, but we can compute the remainder $r$ of an integer $n$ divided by $360$ using the formula
 
 $$r = n - {\bigg\lfloor\frac{n}{360}\bigg\rfloor} \cdot 360,$$
@@ -84,7 +85,7 @@ $$r' = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n
 
 with ${{-180} \le r' \le 180}$ and ${\sin(r')  = \sin(\mathtt{DEGREES})}$.
 Implmenting this function in RMS code, we use the rightmost expression.
-It is rearranged to read for from left-to-right, accounting for the lack of different operator precedence levels.
+It is rearranged to read from left-to-right, accounting for the lack of different operator precedence levels.
 
 ### The Hack
 

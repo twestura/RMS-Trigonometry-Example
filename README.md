@@ -115,7 +115,7 @@ To compute `FLIP`, we'll use three properties:
 - `-1 / 2` evaluates to `-1`.
 - ${180 < 256 = 2^8}$.
 
-The first two properties arise from the rounding behavior of division, and lead to an interesting property.
+The first two properties arise from the rounding behavior of division and lead to an interesting property.
 If we take any nonzero number and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
 Imagine what Zeno would think if he saw this!
 Now, since ${-2^8 < -180 \le r' \le 180 < 2^8}$, we simply divide $r'$ by $2$ eight times!
@@ -131,7 +131,7 @@ Now that we've divided by $2$ eight times, what comes next?
 Multiplying by $2$ of course!
 Recall that our goal is for `FLIP` to be $1$ or ${-1}$ depending on whether ${r' \ge 0}$ or ${r' < 0}$.
 We need to handle the case where ${r' = 0}$.
-We performing the following operations, keeping in mind that all operators have the same precedence:
+We perform the following operations, keeping in mind that all operators have the same precedence:
 
 - Multiply by $2$.
 - Add $1$.

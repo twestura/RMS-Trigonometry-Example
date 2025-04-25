@@ -131,7 +131,7 @@ Now that we've divided by $2$ eight times, what comes next?
 Multiplying by $2$ of course!
 Recall that our goal is for `FLIP` to be $1$ or ${-1}$ depending on whether ${r' \ge 0}$ or ${r' < 0}$.
 We need to handle the case where ${r' = 0}$.
-We performing the following, keeping in mind that all operators have the same precedence:
+We performing the following operations, keeping in mind that all operators have the same precedence:
 
 - Multiply by $2$.
 - Add $1$.
@@ -159,5 +159,9 @@ The rest of the code consists of plugging the value into the approximation formu
 ```
 
 Notable here are the two usages of `FLIP` to handle the identity ${\sin{({-x})} = -\sin{(x)}}$.
+The computation performed here is
+
+$$\mathrm{FLIP} \cdot \sin(\mathrm{FLIP} \cdot r').$$
+
 We also apply the `PADDING` to the numerator of the fraction.
 The padding preserves decimal precision, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.

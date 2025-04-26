@@ -100,7 +100,7 @@ Recall that our approximation formula is valid only for ${0 \le r' \le 180}$.
 That's fine for the upper half of the period, but what about the lower half?
 Well we're in luck, as we can use the handy dandy trigonometric identity:
 
-$$\sin{({-x})} = -\sin{} x.$$
+$$\sin{} x = -\sin{({-x})}.$$
 
 For values $r'$ where ${-180 \le r' \le 0}$, we negate $r'$, compute the sine, and negate the output.
 For this process, we define a constant `FLIP` such that:
@@ -108,14 +108,16 @@ For this process, we define a constant `FLIP` such that:
 - `FLIP` equals $1$ when ${r' \ge 0}$,
 - `FLIP` equals $-1$ when ${r' < 0}$.
 
-We'll multiply by `FLIP`, and doing so will perform the negations only where necessary.
+We'll multiply by `FLIP`, and doing so will perform the negations only where necessary:
+
+$$\mathrm{FLIP} \cdot \sin(\mathrm{FLIP} \cdot r').$$
 
 To compute `FLIP`, we'll use three properties:
 - `1 / 2` evaluates to `1`.
 - `-1 / 2` evaluates to `-1`.
 - ${180 < 256 = 2^8}$.
 
-The first two properties arise from the rounding behavior of division and lead to an interesting property.
+The first two properties arise from the rounding behavior of division and lead to an interesting behavior.
 If we take any nonzero number and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
 Imagine what Zeno would think if he saw this!
 Now, since ${-2^8 < -180 \le r' \le 180 < 2^8}$, we simply divide $r'$ by $2$ eight times!
@@ -162,10 +164,8 @@ The rest of the code consists of plugging the value into the approximation formu
 #const SIN (FLIP * 4 * ARG_SUPP * PADDING / DENOMINATOR)
 ```
 
-Notable here are the two usages of `FLIP` to handle the identity ${\sin{({-x})} = -\sin{(x)}}$.
-The computation performed here is
-
-$$\mathrm{FLIP} \cdot \sin(\mathrm{FLIP} \cdot r').$$
+Notable here are the two usages of `FLIP` to handle the identity ${\sin{({x})} = -\sin{({-x})}}$.
+First to multiply `FLIP * REMAINDER'`, and second to multiply the final result.
 
 We also apply the `PADDING` to the numerator of the fraction.
 The padding preserves decimal precision, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.

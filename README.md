@@ -39,12 +39,11 @@ The following code snipped computes the sine approximation:
 ```text
 #const PADDING 100000
 #const DEGREES rnd(-9999,9999)
-#const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
-#const FLIP (REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
-#const ARG (FLIP * REMAINDER')
-#const ARG_SUPP (180 - ARG * ARG)
+#const R (DEGREES / 360 * -360 + DEGREES)
+#const SGN (R / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2)
+#const ARG_SUPP (180 * SGN - R * R)
 #const DENOMINATOR (40500 - ARG_SUPP)
-#const SIN (FLIP * 4 * ARG_SUPP * PADDING / DENOMINATOR)
+#const SIN (SGN * 4 * ARG_SUPP * PADDING / DENOMINATOR)
 ```
 
 First we define a `PADDING` value.
@@ -56,116 +55,121 @@ Set this constant to any number of degrees to compute the sine of the respective
 
 ### Oh For a Remainder Operator
 
-Now comes the `REMAINDER'` constant.
+Now comes the `R` constant.
 
 ```text
-#const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
+#const R' (DEGREES / 360 * -360 + DEGREES)
 ```
 
 Since sine is periodic, we might desire the integer $r$ such that $0 \le r \le 359$ and ${\sin(r) = \sin(\mathtt{DEGREES})}$, which occurs when $r$ is the remainder of `DEGREES` when divided by $360$.
-That is, ${r = \mathrm{DEGREES} \bmod 360}$.
+That is, ${r = \mathtt{DEGREES} \bmod 360}$.
 RMS expressions do not present a remainder operator, but we can compute the remainder $r$ of an integer $n$ divided by $360$ using the formula
 
 $$r = n - {\bigg\lfloor\frac{n}{360}\bigg\rfloor} \cdot 360,$$
 
 where $0 \le r \le 359$.
 
+But here we have a problem.
 While some programming languages provide a form of integer division equivalent to taking the floor, RMS affords no such luxury.
-Rounding is our only recourse, and it produces either the floor or the ceiling of $n / 360$.
+Rounding ${n / 360}$ to the nearest integer is our only recourse.
+Such rounding produces either the floor or the ceiling.
+
 The floor and ceiling are equal only when $n$ is a multiple of $360$, in which case the remainder is $0$.
 When the floor and ceiling are different, we have:
 
 $$n - {\bigg\lceil\frac{n}{360}\bigg\rceil} \cdot 360 = n - \Bigg({\bigg\lfloor\frac{n}{360}\bigg\rfloor} + 1\Bigg) \cdot 360 = n - {\bigg\lfloor\frac{n}{360}\bigg\rfloor} \cdot 360 - 360 = r - 360.$$
 
-When we take the ceiling, we're just subtracting an extra $360$ and shifting $r$ one period to the left.
+Hence taking the ceiling subtracts an extra $360$ and shifts $r$ one period to the left.
 And because the ceiling only is taken when rounding up, this shift only occurs for values of $n$ where $180 \le n \bmod 360 \le 360$.
 Thus we set
 
-$$r' = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n / 360) \cdot ({-360}) + n,$$
+$$r = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n / 360) \cdot ({-360}) + n,$$
 
 with ${{-180} \le r' \le 180}$ and ${\sin(r')  = \sin(\mathtt{DEGREES})}$.
 Implmenting this function in RMS code, we use the rightmost expression.
 It is rearranged to read from left-to-right, accounting for the lack of different operator precedence levels.
 
-### The Hack
+Now we might look at the interval of $[-180, 180]$ and lament that it's not our original target of $[0, 360]$.
+But the interval still emcompasses one complete period of sine.
+And, as we'll see in the next section, actually is more convenient.
 
-Oh boi, it's time to discuss our good friend `FLIP`.
+### Zeno's Signum
 
-```text
-#const FLIP (REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
-```
-
-We've so far computed a value $r'$ such that ${-180 \le r' \le 180}$, and now we need to compute $\sin{} r'$.
-Recall that our approximation formula is valid only for ${0 \le r' \le 180}$.
-That's fine for the upper half of the period, but what about the lower half?
-Well we're in luck, as we can use the handy dandy trigonometric identity:
+For values of $r$ in $[0, 180]$, we can plug them directly into our approximation formula.
+But what about $r$ in $[-180, -1]$?
+For these values we use the trig identity:
 
 $$\sin{} x = -\sin{({-x})}.$$
 
-For values $r'$ where ${-180 \le r' \le 0}$, we negate $r'$, compute the sine, and negate the output.
-For this process, we define a constant `FLIP` such that:
+In order to use this identity, we need to:
 
-- `FLIP` equals $1$ when ${r' \ge 0}$,
-- `FLIP` equals $-1$ when ${r' < 0}$.
+- Detect if ${r < 0}$.
+- Compute $\sin{(-r)}$.
+- Negate the computed sine value.
 
-We'll multiply by `FLIP`, and doing so will perform the negations only where necessary:
+And all of that must be done without if statements!
 
-$$\mathrm{FLIP} \cdot \sin(\mathrm{FLIP} \cdot r').$$
+For our implementation, we'll use the signum function, defined by:
 
-To compute `FLIP`, we'll use three properties:
+$$\mathrm{sgn}(x) = \begin{cases}
+    1 & x > 0,\\
+    0 & x = 0,\\
+    -1 & x < 0.
+\end{cases}$$
+
+This function is also called the "sign" function, but we'll use the term "signum" to avoid phoenic ambiguity between sign and sine.
+And we'll name our constant `SGN` becuase `SIGN` already is the constant for the signpost object in Aoe2.
+
+Let's examine the line where we compute `SGN`:
+
+```text
+#const SGN (R / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2)
+```
+
+Here we're using four properties:
 - `1 / 2` evaluates to `1`.
+- `0 / 2` evaluates to `0`.
 - `-1 / 2` evaluates to `-1`.
 - ${180 < 256 = 2^8}$.
 
-The first two properties arise from the rounding behavior of division and lead to an interesting behavior.
+The rounding behavior of RMS division leads to an interesting property.
 If we take any nonzero number and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
-Imagine what Zeno would think if he saw this!
-Now, since ${-2^8 < -180 \le r' \le 180 < 2^8}$, we simply divide $r'$ by $2$ eight times!
+Now, since ${|r| \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
 
-```text
-REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2
-```
-
-We're left with a value that is either $1$, $0$, or ${-1}$ for ${r' > 0}$, ${r' = 0}$, and ${r' < 0}$, respectively.
-Because we're relying upon the rounding, we must perform the divisions separately—we cannot simply divide by $256$.
-
-Now that we've divided by $2$ eight times, what comes next?
-Multiplying by $2$ of course!
-Recall that our goal is for `FLIP` to be $1$ or ${-1}$ depending on whether ${r' \ge 0}$ or ${r' < 0}$.
-We need to handle the case where ${r' = 0}$.
-We perform the following operations, keeping in mind that all operators have the same precedence:
-
-- Multiply by $2$.
-- Add $1$.
-- Divide by $2$ twice.
-
-```text
-REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2
-```
-
-These operations are summarized in the following table.
-
-| Initial $r'$ Value | `/ 2` x8 | `* 2`  | `+ 1`  | `/ 2`  | `/ 2`  |
-| -----------------: | -------: | -----: | -----: | -----: | -----: |
-| $r' > 0$           | $1$      | $2$    | $3$    | $2$    | $1$    |
-| $r' = 0$           | $0$      | $0$    | $1$    | $1$    | $1$    |
-| $r' < 0$           | ${-1}$   | ${-2}$ | ${-1}$ | ${-1}$ | ${-1}$ |
-
-And that concludes our calcuation of `FLIP`.
+We're left with a value that is either $1$, $0$, or ${-1}$ for ${r > 0}$, ${r = 0}$, and ${r < 0}$, respectively.
+And that's exactly the value we want for the signum of $r$.
+Because we're relying upon the rounding of each division, we must perform the divisions separately—we cannot simply divide by $256$.
 
 ### Finishing the Computation
 
-The rest of the code consists of plugging the value into the approximation formula.
+For brevity, let $s$ denote the `SGN` value.
+We compute
+
+$$s \sin{(sr)}.$$
+
+We have three cases, and in each case we have that ${s \sin{(sr)} = \sin{} r}$:
+
+- ${r > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
+- ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0}$.
+- ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{} r}$.
+
+The rest of the code consists using the approximation formula.
 
 ```text
-#const ARG (FLIP * REMAINDER')
-#const ARG_SUPP (180 - ARG * ARG)
+#const ARG_SUPP (180 * SGN - R * R)
 #const DENOMINATOR (40500 - ARG_SUPP)
-#const SIN (FLIP * 4 * ARG_SUPP * PADDING / DENOMINATOR)
+#const SIN (SGN * 4 * ARG_SUPP * PADDING / DENOMINATOR)
 ```
 
-Notable here are the two usages of `FLIP` to handle the identity ${\sin{({x})} = -\sin{({-x})}}$.
-First to multiply `FLIP * REMAINDER'`, and second to multiply the final result.
+Both the numerator and the denominator of the approximation formula use the product of the angle and its supplementary angle:
+
+$$x(180 - x).$$
+
+Pluggin in $x = sr$, we can rewrite this product as:
+
+$$x(180 - x) = (180 - sr)sr = (180s - s^2r)r = (180s - r)r.$$
+
+The rightmost equality follows because ${s^2 = 1}$ when $r$ is nonzero.
 
 We also apply the `PADDING` to the numerator of the fraction.
 The padding preserves decimal precision, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.

@@ -48,7 +48,7 @@ The following code snipped computes the sine approximation:
 
 First we define a `PADDING` value.
 Since every division rounds, the `PADDING` is a power of ten multiplier for shifting the decimal point.
-The values of sine are real numbers falling in `[-1, 1]`, and it would be very boring if our approximation only rounded to `-1`, `0`, and `1` due to the fraction in the formula.
+The values of sine are real numbers falling in $[-1, 1]$, and it would be very boring if our approximation only rounded to $-1$, $0$, and $1$ due to the fraction in the formula.
 
 Next, an input in `DEGREES` is generated randomly for demonstration purposes.
 Set this constant to any number of degrees to compute the sine of the respective angle if you want to test a specific value.
@@ -58,7 +58,7 @@ Set this constant to any number of degrees to compute the sine of the respective
 Now comes the `R` constant.
 
 ```text
-#const R' (DEGREES / 360 * -360 + DEGREES)
+#const R (DEGREES / 360 * -360 + DEGREES)
 ```
 
 Since sine is periodic, we might desire the integer $r$ such that $0 \le r \le 359$ and ${\sin(r) = \sin(\mathtt{DEGREES})}$, which occurs when $r$ is the remainder of `DEGREES` when divided by $360$.
@@ -147,13 +147,13 @@ We compute
 
 $$s \sin{(sr)}.$$
 
-We have three cases, and in each case we have that ${s \sin{(sr)} = \sin{} r}$:
+We have three cases where ${s \sin{(sr)} = \sin{} r}$:
 
 - ${r > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
 - ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0}$.
 - ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{} r}$.
 
-The rest of the code consists using the approximation formula.
+The rest of the code consists of using the approximation formula.
 
 ```text
 #const ARG_SUPP (180 * SGN - R * R)
@@ -165,11 +165,11 @@ Both the numerator and the denominator of the approximation formula use the prod
 
 $$x(180 - x).$$
 
-Pluggin in $x = sr$, we can rewrite this product as:
+Plugging in ${x = sr}$, we can rewrite this product as:
 
 $$x(180 - x) = (180 - sr)sr = (180s - s^2r)r = (180s - r)r.$$
 
-The rightmost equality follows because ${s^2 = 1}$ when $r$ is nonzero.
+The rightmost equality follows because ${s^2 = 1}$ when $r$ is nonzero, and the entire product is zero when $r$ is zero.
 
 We also apply the `PADDING` to the numerator of the fraction.
 The padding preserves decimal precision, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.

@@ -89,14 +89,14 @@ with ${{-180} \le r' \le 180}$ and ${\sin(r')  = \sin(\mathtt{DEGREES})}$.
 Implmenting this function in RMS code, we use the rightmost expression.
 It is rearranged to read from left-to-right, accounting for the lack of different operator precedence levels.
 
-Now we might look at the interval of $[-180, 180]$ and lament that it's not our original target of $[0, 360]$.
+Now we might look at the interval $[{-180}, 180]$ and lament that it's not our original target of $[0, 360]$.
 But the interval still emcompasses one complete period of sine.
 And, as we'll see in the next section, actually is more convenient.
 
 ### Zeno's Signum
 
 For values of $r$ in $[0, 180]$, we can plug them directly into our approximation formula.
-But what about $r$ in $[-180, -1]$?
+But what about $r$ in $[{-180}, {-1}]$?
 For these values we use the trig identity:
 
 $$\sin{} x = -\sin{({-x})}.$$

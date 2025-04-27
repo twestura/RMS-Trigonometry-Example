@@ -26,21 +26,19 @@
 #const DEGREES rnd(-9999,9999) /* Argument of the sine and cosine. */
 
 /* sin(DEGREES) */
-#const REMAINDER' (DEGREES / 360 * -360 + DEGREES)
-#const FLIP (REMAINDER' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
-#const ARG (FLIP * REMAINDER')
-#const ARG_SUPP (180 - ARG * ARG)
+#const R (DEGREES / 360 * -360 + DEGREES)
+#const SGN (R / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2)
+#const ARG_SUPP (180 * SGN - R * R)
 #const DENOMINATOR (40500 - ARG_SUPP)
-#const SIN (FLIP * 4 * ARG_SUPP * PADDING / DENOMINATOR)
+#const SIN (SGN * 4 * ARG_SUPP * PADDING / DENOMINATOR)
 
 /* cos(DEGREES) = sin(90 - DEGREES) */
 #const COS_DEGREES (90 - DEGREES)
-#const COS_REM' (COS_DEGREES / 360 * -360 + COS_DEGREES)
-#const COS_FLIP (COS_REM' / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 * 2 + 1 / 2 / 2)
-#const COS_ARG (COS_FLIP * COS_REM')
-#const COS_ARG_SUPP (180 - COS_ARG * COS_ARG)
+#const COS_R (COS_DEGREES / 360 * -360 + COS_DEGREES)
+#const COS_SGN (COS_R / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2)
+#const COS_ARG_SUPP (180 * COS_SGN - COS_R * COS_R)
 #const COS_DENOM (40500 - COS_ARG_SUPP)
-#const COS (COS_FLIP * 4 * COS_ARG_SUPP * PADDING / COS_DENOM)
+#const COS (COS_SGN * 4 * COS_ARG_SUPP * PADDING / COS_DENOM)
 
 #const RADIUS 20 /* Radius at which to place the Flag. */
 #const CENTER 59 /* Center of the Scout-Flag circle for a Tiny-sized map. */

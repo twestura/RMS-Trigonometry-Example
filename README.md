@@ -145,13 +145,13 @@ Because we're relying upon the rounding of each division, we must perform the di
 For brevity, let $s$ denote the `SGN` value.
 We compute
 
-$$s \sin{(sr)}.$$
+$$s \cdot \sin{(sr)}.$$
 
-We have three cases where ${s \sin{(sr)} = \sin{} r}$:
+We have three cases where ${s \cdot \sin{(sr)} = \sin{(r)}}$:
 
 - ${r > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
 - ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0}$.
-- ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{} r}$.
+- ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{(r)}}$.
 
 The rest of the code consists of using the approximation formula.
 

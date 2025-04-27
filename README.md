@@ -134,7 +134,7 @@ Here we're using four properties:
 
 The rounding behavior of RMS division leads to an interesting nuance.
 If we take any nonzero number and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
-Now, since ${|r| \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
+Now, since ${{|r|} \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
 
 We're left with a value that is either $1$, $0$, or ${-1}$ for ${r > 0}$, ${r = 0}$, and ${r < 0}$, respectively.
 And that's exactly the value we want for the signum of $r$.

@@ -140,8 +140,6 @@ We're left with a value that is either $1$, $0$, or ${-1}$ for ${r > 0}$, ${r = 
 And that's exactly the value we want for the signum of $r$.
 Because we're relying upon the rounding of each division, we must perform the divisions separately—we cannot simply divide by $256$.
 
-### Finishing the Computation
-
 For brevity, let $s$ denote the `SGN` value.
 We compute
 
@@ -152,6 +150,8 @@ We have three cases where ${s \cdot \sin{(sr)} = \sin{(r)}}$:
 - ${r > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
 - ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0 = \sin{({0})}}$.
 - ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{(r)}}$.
+
+### Finishing the Computation
 
 The rest of the code consists of using the approximation formula.
 

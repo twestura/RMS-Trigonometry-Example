@@ -133,7 +133,7 @@ Here we're using four properties:
 - ${180 < 256 = 2^8}$.
 
 The rounding behavior of RMS division leads to an interesting nuance.
-If we take any nonzero number and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
+If we take any nonzero integer and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
 Now, since ${{|r|} \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
 
 We're left with a value that is either $1$, $0$, or ${-1}$ for ${r > 0}$, ${r = 0}$, and ${r < 0}$, respectively.
@@ -150,7 +150,7 @@ $$s \cdot \sin{(sr)}.$$
 We have three cases where ${s \cdot \sin{(sr)} = \sin{(r)}}$:
 
 - ${r > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
-- ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0}$.
+- ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0 = \sin{({0})}}$.
 - ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{(r)}}$.
 
 The rest of the code consists of using the approximation formula.

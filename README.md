@@ -48,7 +48,7 @@ The following code snipped computes the sine approximation:
 
 First we define a `PADDING` value.
 Since every division rounds, the `PADDING` is a power of ten multiplier for shifting the decimal point.
-The values of sine are real numbers falling in $[-1, 1]$, and it would be very boring if our approximation only rounded to $-1$, $0$, and $1$ due to the fraction in the formula.
+The values of sine are real numbers falling in $[{-1}, 1]$, and it would be very boring if our approximation only rounded to ${-1}$, $0$, and $1$ due to the fraction in the formula.
 
 Next, an input in `DEGREES` is generated randomly for demonstration purposes.
 Set this constant to any number of degrees to compute the sine of the respective angle if you want to test a specific value.

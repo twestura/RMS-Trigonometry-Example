@@ -28,7 +28,7 @@ Despite these limitations, it nevertheless is possible to compute more advanced 
 This repository is an example of computing the sine and cosine functions.
 We use [Bhāskara I's sine approximation](https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula), valid for degrees $x$ where $0 \le x \le 180$:
 
-$$\sin{x} = \frac{4x(180 - x)}{40500 - x(180 - x)}.$$
+$$\sin{x} \approx \frac{4x(180 - x)}{40500 - x(180 - x)}.$$
 
 The value of cosine can be computed using this formula along with the trigonometric identity
 

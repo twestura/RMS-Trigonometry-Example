@@ -85,7 +85,7 @@ Thus we set
 
 $$r = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n / 360) \cdot ({-360}) + n,$$
 
-with ${{-180} \le r' \le 180}$ and ${\sin(r')  = \sin(\mathtt{DEGREES})}$.
+with ${{-180} \le r \le 180}$ and ${\sin{(r)}  = \sin(\mathtt{DEGREES})}$.
 Implmenting this function in RMS code, we use the rightmost expression.
 It is rearranged to read from left-to-right, accounting for the lack of different operator precedence levels.
 

@@ -83,28 +83,28 @@ Hence taking the ceiling subtracts an extra $360$ and shifts $r$ one period to t
 And because the ceiling only is taken when rounding up, this shift only occurs for values of $n$ where $180 \le n \bmod 360 \le 360$.
 Thus we set
 
-$$r = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n / 360) \cdot ({-360}) + n,$$
+$$R = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n / 360) \cdot ({-360}) + n,$$
 
-with ${{-180} \le r \le 180}$ and ${\sin{(r)}  = \sin(\mathtt{DEGREES})}$.
+with ${{-180} \le R \le 180}$ and ${\sin{(R)}  = \sin(\mathtt{DEGREES})}$.
 Implmenting this function in RMS code, we use the rightmost expression.
 It is rearranged to read from left-to-right, accounting for the lack of different operator precedence levels.
 
-Now we might look at the interval $[{-180}, 180]$ and lament that it's not our original target of $[0, 360]$.
+Now we might look at the interval $[{-180}, 180]$ and lament that it's not our original target of $[0, 359]$.
 But the interval still encompasses one complete period of sine.
 And, as we'll see in the next section, actually is more convenient.
 
 ### Zeno's Signum
 
-For values of $r$ in $[0, 180]$, we can plug them directly into our approximation formula.
-But what about $r$ in $[{-180}, {-1}]$?
+For values of $R$ in $[0, 180]$, we can plug them directly into our approximation formula.
+But what about $R$ in $[{-180}, {-1}]$?
 For these values we use the trig identity:
 
 $$\sin{} x = -\sin{({-x})}.$$
 
 In order to use this identity, we need to:
 
-- Detect if ${r < 0}$.
-- Compute $\sin{(-r)}$.
+- Detect if ${R < 0}$.
+- Compute $\sin{(-R)}$.
 - Negate the computed sine value.
 
 And all of that must be done without if statements!
@@ -134,22 +134,22 @@ Here we're using four properties:
 
 The rounding behavior of RMS division leads to an interesting nuance.
 If we take any nonzero integer and divide by $2$ repeatedly, eventually we reach $1$ if the number is positive and ${-1}$ if the number is negative.
-Now, since ${{|r|} \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
+Now, since ${{|R|} \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
 
-We're left with a value that is either $1$, $0$, or ${-1}$ for ${r > 0}$, ${r = 0}$, and ${r < 0}$, respectively.
-And that's exactly the value we want for the signum of $r$.
+We're left with a value that is either $1$, $0$, or ${-1}$ for ${R > 0}$, ${R = 0}$, and ${R < 0}$, respectively.
+And that's exactly the value we want for the signum of $R$.
 Because we're relying upon the rounding of each division, we must perform the divisions separately—we cannot simply divide by $256$.
 
-For brevity, let $s$ denote the `SGN` value.
+For brevity, let ${s = \mathrm{sgn}(R)}$ denote the `SGN` value.
 We compute
 
-$$s \cdot \sin{(sr)}.$$
+$$s \cdot \sin{(sR)}.$$
 
-We have three cases where ${s \cdot \sin{(sr)} = \sin{(r)}}$:
+We have three cases where ${s \cdot \sin{(sR)} = \sin{(R)}}$:
 
-- ${r > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
-- ${r = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0 = \sin{({0})}}$.
-- ${r < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-r})} = \sin{(r)}}$.
+- ${R > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
+- ${R = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0 = \sin{({0})}}$.
+- ${R < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-R})} = \sin{(R)}}$.
 
 ### Finishing the Computation
 
@@ -165,11 +165,11 @@ Both the numerator and the denominator of the approximation formula use the prod
 
 $$x(180 - x).$$
 
-Plugging in ${x = sr}$, we can rewrite this product as:
+Plugging in ${x = sR}$, we can rewrite this product as:
 
-$$x(180 - x) = (180 - sr)sr = (180s - s^2r)r = (180s - r)r.$$
+$$x(180 - x) = (180 - sR)sR = (180s - s^2 R)R = (180s - R)R.$$
 
-The rightmost equality follows because ${s^2 = 1}$ when $r$ is nonzero, and the entire product is zero when $r$ is zero.
+The rightmost equality follows because ${s^2 = 1}$ when $R$ is nonzero, and the entire product is zero when $R$ is zero.
 
 We also apply the `PADDING` to the numerator of the fraction.
 The padding preserves decimal precision, and it's usage can be seen in the player resource Food and Gold values when launching the map script in Single Player.

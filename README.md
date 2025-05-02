@@ -90,7 +90,7 @@ Implmenting this function in RMS code, we use the rightmost expression.
 It is rearranged to read from left-to-right, accounting for the lack of different operator precedence levels.
 
 Now we might look at the interval $[{-180}, 180]$ and lament that it's not our original target of $[0, 360]$.
-But the interval still emcompasses one complete period of sine.
+But the interval still encompasses one complete period of sine.
 And, as we'll see in the next section, actually is more convenient.
 
 ### Zeno's Signum

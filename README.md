@@ -34,7 +34,7 @@ The value of cosine can be computed using this formula along with the trigonomet
 
 $$\cos{x} = \sin{(90 - x)}.$$
 
-The following code snipped computes the sine approximation:
+The following code snippet computes the sine approximation:
 
 ```text
 #const PADDING 100000

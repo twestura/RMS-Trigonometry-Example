@@ -120,6 +120,16 @@ $$\mathrm{sgn}(x) = \begin{cases}
 This function is also called the "sign" function, but we'll use the term "signum" to avoid phoenic ambiguity between sign and sine.
 And we'll name our constant `SGN` becuase `SIGN` already is the constant for the signpost object in Aoe2.
 
+It turns out that the trig identity can be rewritten, using the signum in place of the negative signs.
+For brevity, let ${s = \mathrm{sgn}(R)}$ denote the `SGN` value.
+We have three cases where we show:
+
+$${s \cdot \sin{(sR)} = \sin{(R)}}.$$
+
+- ${R > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
+- ${R = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0 = \sin{({0})}}$.
+- ${R < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-R})} = \sin{(R)}}$.
+
 Let's examine the line where we compute `SGN`:
 
 ```text
@@ -139,17 +149,6 @@ Now, since ${{|R|} \le 180 < 2^8}$, we simply divide $r$ by $2$ eight times!
 We're left with a value that is either $1$, $0$, or ${-1}$ for ${R > 0}$, ${R = 0}$, and ${R < 0}$, respectively.
 And that's exactly the value we want for the signum of $R$.
 Because we're relying upon the rounding of each division, we must perform the divisions separately—we cannot simply divide by $256$.
-
-For brevity, let ${s = \mathrm{sgn}(R)}$ denote the `SGN` value.
-We compute
-
-$$s \cdot \sin{(sR)}.$$
-
-We have three cases where ${s \cdot \sin{(sR)} = \sin{(R)}}$:
-
-- ${R > 0}$, then ${s = 1}$ and the $s$ values are just multiplications by $1$.
-- ${R = 0}$, in which case we have ${0 \cdot \sin{(0 \cdot 0)} = 0 = \sin{({0})}}$.
-- ${R < 0}$, where ${s = -1}$ and by the aforementioned trig identity, we have ${-\sin{({-R})} = \sin{(R)}}$.
 
 ### Finishing the Computation
 

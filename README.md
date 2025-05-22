@@ -80,7 +80,7 @@ When the floor and ceiling are different, we have:
 $$n - {\bigg\lceil\frac{n}{360}\bigg\rceil} \cdot 360 = n - \Bigg({\bigg\lfloor\frac{n}{360}\bigg\rfloor} + 1\Bigg) \cdot 360 = n - {\bigg\lfloor\frac{n}{360}\bigg\rfloor} \cdot 360 - 360 = r - 360.$$
 
 Hence taking the ceiling subtracts an extra $360$ and shifts $r$ one period to the left.
-And because the ceiling only is taken when rounding up, this shift only occurs for values of $n$ where $180 \le n \bmod 360 \le 360$.
+And because the ceiling only is taken when rounding up, this shift only occurs for values of $n$ where $180 \le n \bmod 360 < 360$.
 Thus we set
 
 $$R = n - 360 \cdot \mathrm{round}\left(\frac{n}{360}\right) = \mathrm{round}(n / 360) \cdot ({-360}) + n,$$
@@ -92,6 +92,10 @@ It is rearranged to read from left-to-right, accounting for the lack of differen
 Now we might look at the interval $[{-180}, 180]$ and lament that it's not our original target of $[0, 359]$.
 But the interval still encompasses one complete period of sine.
 And, as we'll see in the next section, actually is more convenient.
+
+Note we could deal only with the interval $[{-180}, 179]$ because RMS always rounds away from zero for numbers ending in $.5$.
+However, some rounding methods round either towards or away from zero for such numbers, depending on whether the ones digit is even or odd.
+Using the interval $[{-180}, 180]$ in our analysis generalizes to those cases too, and $180$ still is a valid input for the approximation formula.
 
 ### Zeno's Signum
 

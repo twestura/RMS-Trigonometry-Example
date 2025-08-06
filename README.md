@@ -1,7 +1,7 @@
 # RMS Trigonometry Example
 An example of implementing trigonometric functions in Aoe2 random map scripts.
 [Update 141935](https://www.ageofempires.com/news/a-sneak-peek-at-new-content-coming-to-age-of-empires-ii-definitive-edition/) for Age of Empires II: Definitive Edition adds the ability to perform basic arithmetic in random map scripts.
-Originally this repository housed an example of implementing trigonometric functions on that patch.
+Originally this repository housed an example of implementing [trigonometric functions on that patch](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/old-notes.md).
 However, the [July 2025 Public Update Preview](https://steamcommunity.com/app/813780/discussions/34/597406481786246211/?snr=2___) introduces breaking changes to how arithmetic expressions are evaluated.
 The implementation is updated to be compatible with this patch.
 
@@ -139,5 +139,5 @@ $$x(180 - x) = (180 - x)x = (180 - S R) S R  = (180 \cdot S - S^2 R)R = (180 \cd
 
 The rightmost equality follows because ${S^2 = 1}$.
 
-The output of the example can be seen in the player resource Food and Gold values when launching the accompanying example map script in Single Player.
+The output of the example can be seen in the player resource Food and Gold values when launching the accompanying [example map script](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/Math%20Trig%20July%202025.rms) in Single Player.
 The example multiplies the `SIN` and `COS` values by `10000` to display more decimal digits.

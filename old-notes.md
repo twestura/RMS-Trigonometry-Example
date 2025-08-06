@@ -1,4 +1,4 @@
-# RMS Trigonometry Example
+# RMS Trigonometry Example April 2025
 An example of implementing trigonometric functions in Aoe2 random map scripts.
 This page is the original version of the notes.
 Future updates to DE include breaking changes that require updates to this technique.

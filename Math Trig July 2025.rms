@@ -1,0 +1,74 @@
+/*
+ * This script uses an approximation to the sine function to compute values of
+ * sine and cosine. This forumla is an approximation for x in [0, 180] degrees:
+ *     4x(180 - x) / (40500 - x(180 - x)).
+ * See this Wikipedia page for details about the approximation formula:
+ * https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula
+ *
+ * Cosine is calculated using the formula `cos x = sin(90 - x)`.
+ *
+ * The map script shows output in two ways:
+ * - Player resources:
+ *   - Wood: The angle in degrees.
+ *   - Food: The cosine of the angle, multiplied by 10000.
+ *   - Gold: The sine of the angle, multiplied by 10000.
+ * - The location of the Flag around the center, at a position determined by
+ *   the computed cosine and sine values.
+ */
+
+#const DEGREES rnd(-9999,9999) /* Argument of the sine and cosine. */
+
+/* sin(DEGREES) */
+#const R (DEGREES + 360000 % 360 * -1 + 180)
+#const S (R + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf * 2 - 1)
+#const ARG_SUPP (180 * S - R * R)
+#const DENOMINATOR (40500 - ARG_SUPP)
+#const SIN (S * 4 * ARG_SUPP / DENOMINATOR)
+
+/* cos(DEGREES) = sin(90 - DEGREES) */
+#const CO_DEG (90 - DEGREES)
+#const CO_R (CO_DEG + 360000 % 360 * -1 + 180)
+#const CO_S (CO_R + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf + 1 / 2 % -inf * 2 - 1)
+#const CO_ARG_SUPP (180 * CO_S - CO_R * CO_R)
+#const CO_DENOMINATOR (40500 - CO_ARG_SUPP)
+#const COS (CO_S * 4 * CO_ARG_SUPP / CO_DENOMINATOR)
+
+#const RADIUS 20 /* Radius at which to place the Flag. */
+#const CENTER 59 /* Center of the Scout-Flag circle for a Tiny-sized map. */
+#const X (RADIUS * COS + CENTER) /* X coordinate of the Flag. */
+#const Y (RADIUS * SIN + CENTER) /* Y coordinate of the Flag. */
+
+<PLAYER_SETUP>
+direct_placement
+
+/* Clears the starting resources. */
+effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD -200
+effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD -200
+effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD -100
+effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD -200
+
+effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD DEGREES
+effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD (COS * 10000)
+effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD (SIN * 10000)
+/* effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD 0 */
+
+<LAND_GENERATION>
+base_terrain GRASS
+create_land {
+  terrain_type GRASS
+  land_position 50 50
+  assign_to_player 1
+}
+
+<OBJECTS_GENERATION>
+create_actor_area CENTER CENTER 1 0
+create_actor_area X Y 2 0
+
+create_object SCOUT {
+  set_place_for_every_player
+  actor_area_to_place_in 1
+}
+
+create_object FLAG_A {
+  actor_area_to_place_in 2
+}

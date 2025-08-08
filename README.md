@@ -100,7 +100,7 @@ $$S \cdot \sin(S R) = \sin R.$$
 
 - ${R > 0}$, then ${S = 1}$ and the $S$ values are just multiplications by $1$.
 - ${R = 0}$, in which case we have ${{-1} \cdot \sin({-1} \cdot 0) = 0 = \sin 0}$.
-- ${R < 0}$, where ${S = -1}$ and by the aforementioned trigonometric identity, we have ${-\sin({-R}) = \sin R}$.
+- ${R < 0}$, where ${S = {-1}}$ and by the aforementioned trigonometric identity, we have ${-\sin({-R}) = \sin R}$.
 
 Let's examine the line where we compute `S`:
 

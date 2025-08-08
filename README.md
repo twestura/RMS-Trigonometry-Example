@@ -13,7 +13,7 @@ Here are some of their basic details:
 - There are five operators: `+`, `-`, `*`, `/`, and `%`.
 - All operations have the same precedence and are left-associative.
 - Parentheses cannot be used to nest subexpressions.
-- Floating point values of `inf`, `-inf`, and `0` are supported.
+- Floating point values of `inf`, `-inf`, and `-0` are supported.
 - The four operations of `+`, `-`, `*`, and `/` do not round.
 - The remainder operator casts both operands to ints before computing the remainder.
 - There are no arrays.

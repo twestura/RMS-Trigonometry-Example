@@ -66,7 +66,7 @@ Thankfully we can use the trigonometric identity
 $$\sin x = \sin(180 - x).$$
 
 At the end of our line of code, we multiply by `-1` and add `180` in order to use this identity.
-That leaves us with a number $R$ that is in $[{-179}, 180]$ and satisfies $\sin R = \sin(180 - \mathtt{DEGREES})$.
+That leaves us with a number $R$ that is in $[{-179}, 180]$ and satisfies $\sin{R} = \sin(180 - \mathtt{DEGREES})$.
 
 ### Zeno's Signum
 

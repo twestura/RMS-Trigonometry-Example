@@ -96,7 +96,7 @@ This value is similar to the signum of $R$, except that when $R = 0$, we set $S 
 It turns out that the trigonometric identity can be rewritten, using $S$ in place of the negative signs.
 We have three cases where we show
 
-$$S \cdot \sin(S R) = \sin{}R.$$
+$$S \cdot \sin(S R) = \sin(R).$$
 
 - ${R > 0}$, then ${S = 1}$ and the $S$ values are just multiplications by $1$.
 - ${R = 0}$, in which case we have ${{-1} \cdot \sin({-1} \cdot 0) = 0 = \sin(0)}$.

@@ -43,7 +43,7 @@ The following code snippet computes the sine approximation:
 #const SIN (S * 4 * ARG_SUPP / DENOMINATOR)
 ```
 
-The constant `DEGREES` is the input to the trigonometric functions; here it generated randomly for demonstration purposes.
+The constant `DEGREES` is the input to the trigonometric functions; here it is generated randomly for demonstration purposes.
 Set this constant to a specific number of degrees to compute the sine of the respective angle.
 
 ### Oh for a Proper Modulus Operator

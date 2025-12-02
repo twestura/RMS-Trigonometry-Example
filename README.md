@@ -63,7 +63,7 @@ To support negative numbers, we add a large multiple of `360` before taking the 
 Rather than use the interval of $[0, 359]$, it'll be more convenient to work around the lack of if statements by using the interval $[{-180}, 180]$.
 Thankfully we can use the trigonometric identity
 
-$$\sin x = \sin(180 - x).$$
+$$\sin{x} = \sin(180 - x).$$
 
 At the end of our line of code, we multiply by `-1` and add `180` in order to use this identity.
 That leaves us with a number $R$ that is in $[{-179}, 180]$ and satisfies $\sin{R} = \sin(180 - \mathtt{DEGREES})$.

@@ -99,8 +99,8 @@ We have three cases where we show
 $$S \cdot \sin(S R) = \sin{}R.$$
 
 - ${R > 0}$, then ${S = 1}$ and the $S$ values are just multiplications by $1$.
-- ${R = 0}$, in which case we have ${{-1} \cdot \sin({-1} \cdot 0) = 0 = \sin 0}$.
-- ${R < 0}$, where ${S = {-1}}$ and by the aforementioned trigonometric identity, we have ${-\sin({-R}) = \sin R}$.
+- ${R = 0}$, in which case we have ${{-1} \cdot \sin({-1} \cdot 0) = 0 = \sin(0)}$.
+- ${R < 0}$, where ${S = {-1}}$ and by the aforementioned trigonometric identity, we have ${-\sin({-R}) = \sin(R)}$.
 
 Let's examine the line where we compute `S`:
 
@@ -140,4 +140,4 @@ $$x(180 - x) = (180 - x)x = (180 - S R) S R  = (180 \cdot S - S^2 R)R = (180 \cd
 The rightmost equality follows because ${S^2 = 1}$.
 
 The output of the example can be seen in the player resource Food and Gold values when launching the accompanying [example map script](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/Math%20Trig%20July%202025.rms) in Single Player.
-The example multiplies the `SIN` and `COS` values by `10000` to display more decimal digits.
+The example multiplies the `COS` and `SIN` values by `10000` to display more decimal digits.

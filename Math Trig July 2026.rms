@@ -5,45 +5,37 @@
  * See this Wikipedia page for details about the approximation formula:
  * https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula
  *
- * Cosine is calculated using the formula `cos x = sin(90 - x)`.
+ * The cosine is calculated using the same formula.
  *
  * The map script shows output in two ways:
  * - Player resources:
  *   - Wood: The angle in degrees.
- *   - Food: The cosine of the angle, multiplied by the padding.
- *   - Gold: The sine of the angle, multiplied by the padding.
+ *   - Food: The cosine of the angle, multiplied by 10000.
+ *   - Gold: The sine of the angle, multiplied by 10000.
  * - The location of the Flag around the center, at a position determined by
  *   the computed cosine and sine values.
  */
 
-/*
- * The power of 10 by which to multiply the output of the trigonometric
- * functions in order to maintain decimal places in spite of the RMS math's
- * rounding. Divide by this constant to use the value.
- */
-#const PADDING 100000
-
-#const DEGREES rnd(-9999,9999) /* Argument of the sine and cosine. */
+#const DEGREES rnd(-10000,10000) /* Argument of the sine and cosine. */
 
 /* sin(DEGREES) */
-#const R (DEGREES / 360 * -360 + DEGREES)
-#const SGN (R / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2)
-#const ARG_SUPP (180 * SGN - R * R)
-#const DENOMINATOR (40500 - ARG_SUPP)
-#const SIN (SGN * 4 * ARG_SUPP * PADDING / DENOMINATOR)
+#const R (DEGREES % 360 + 360 % 360 * -1 + 180)
+#const S (R * 2 + 1 % 2)
+#const P (180 * S - R * R)
+#const D (40500 - P)
+#const SIN (S * 4 * P / D)
 
-/* cos(DEGREES) = sin(90 - DEGREES) */
-#const COS_DEGREES (90 - DEGREES)
-#const COS_R (COS_DEGREES / 360 * -360 + COS_DEGREES)
-#const COS_SGN (COS_R / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2)
-#const COS_ARG_SUPP (180 * COS_SGN - COS_R * COS_R)
-#const COS_DENOM (40500 - COS_ARG_SUPP)
-#const COS (COS_SGN * 4 * COS_ARG_SUPP * PADDING / COS_DENOM)
+/* cos(DEGREES) */
+#const CR (270 - R % 360 * -1 + 180)
+#const CS (CR * 2 + 1 % 2)
+#const CP (180 * CS - CR * CR)
+#const CD (40500 - CP)
+#const COS (CS * 4 * CP / CD)
 
 #const RADIUS 20 /* Radius at which to place the Flag. */
 #const CENTER 59 /* Center of the Scout-Flag circle for a Tiny-sized map. */
-#const X (RADIUS * COS / PADDING + CENTER) /* X coordinate of the Flag. */
-#const Y (RADIUS * SIN / PADDING + CENTER) /* Y coordinate of the Flag. */
+#const X (RADIUS * COS + CENTER) /* X coordinate of the Flag. */
+#const Y (RADIUS * SIN + CENTER) /* Y coordinate of the Flag. */
 
 <PLAYER_SETUP>
 direct_placement
@@ -55,8 +47,8 @@ effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD -100
 effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD -200
 
 effect_amount MOD_RESOURCE AMOUNT_STARTING_WOOD ATTR_ADD DEGREES
-effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD COS
-effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD SIN
+effect_amount MOD_RESOURCE AMOUNT_STARTING_FOOD ATTR_ADD (COS * 10000)
+effect_amount MOD_RESOURCE AMOUNT_STARTING_GOLD ATTR_ADD (SIN * 10000)
 /* effect_amount MOD_RESOURCE AMOUNT_STARTING_STONE ATTR_ADD 0 */
 
 <LAND_GENERATION>

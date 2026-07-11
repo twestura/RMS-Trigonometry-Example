@@ -7,8 +7,8 @@ An example of implementing trigonometric functions in Aoe2 random map scripts.
 The [July 2025 Public Update Preview](https://steamcommunity.com/app/813780/discussions/34/597406481786246211/?snr=2___) introduces breaking changes to how arithmetic expressions are evaluated.
 These notes contain an up-to-date implementation that works on the current version of the game.
 
-- [April 2025](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/Notes%20April%202025.md): the original implementation.
-- [July 2025](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/Notes%20July%202025.md): updated for the breaking changes in the July 2025 Public Update Preview.
+- [April 2025](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/previous-versions/Notes%20April%202025.md): the original implementation.
+- [July 2025](https://github.com/twestura/RMS-Trigonometry-Example/blob/main/previous-versions/Notes%20July%202025.md): updated for the breaking changes in the July 2025 Public Update Preview.
 - July 2026 (this page): simplifies the July 2025 implementation.
 
 ## RMS Math Notes

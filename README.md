@@ -67,9 +67,12 @@ The approximation formula computes $\sin(x)$ for an integer $x$ in the range ${0
 In order to compute $\sin(\mathtt{DEGREES})$ for any integer number of $\mathtt{DEGREES}$, even integers outside of $\mathtt{[0, 180]}$, we calculate two values $R$ and $S$.
 Here, $R$ is a number in the range ${{-179} \le R \le 180}$ such that ${\sin(\mathtt{DEGREES}) = \sin(R)}$.
 And $S$ is a number similar to the signum of $R$ that allows us to use the trigonometric identity
+
 $$\sin(x) = {-\sin({-x})}$$
+
 to compute $\sin(R)$ using arithmetic operations, without any conditional branching.
 This number is defined by
+
 $$S = \begin{cases}1 & R \ge 0,\\\\{-1} & R < 0.\end{cases}$$
 
 In total, the algorithm evaluates ${S \sin(SR)}$, where the following equalities apply:
@@ -89,13 +92,16 @@ Here $r$ is the remainder of $\mathtt{DEGREES}$ when divided by $360$.
 
 We can use the RMS remainder operator to compute `DEGREES % 360`.
 However, the RMS `%` operator behaves analogously to C's `%` operator (and differently than Python's `%` operator), leaving us with two cases:
-$$\mathtt{DEGREES}\,\%\, 360 = \begin{cases}r & \mathtt{DEGREES} \ge 0,\\\\r - 360 & \mathtt{DEGREES} < 0.\end{cases}$$
+
+$$\mathtt{DEGREES}\\,\\%\\, 360 = \begin{cases}r & \mathtt{DEGREES} \ge 0,\\\\r - 360 & \mathtt{DEGREES} < 0.\end{cases}$$
 
 In order to support negative numbers, we add $360$ to this value:
-$$\mathtt{DEGREES} \,\%\, 360 + 360 = \begin{cases}r + 360 & \mathtt{DEGREES} \ge 0,\\\\r & \mathtt{DEGREES} < 0.\end{cases}$$
+
+$$\mathtt{DEGREES} \\,\\%\\, 360 + 360 = \begin{cases}r + 360 & \mathtt{DEGREES} \ge 0,\\\\r & \mathtt{DEGREES} < 0.\end{cases}$$
 
 Now, we take the remainder once more to handle both cases at once:
-$$(\mathtt{DEGREES} \,\%\, 360 + 360) \,\%\, 360 = \begin{cases}r & \mathtt{DEGREES} \ge 0,\\\\r & \mathtt{DEGREES} < 0.\end{cases}$$
+
+$$(\mathtt{DEGREES} \\,\\%\\, 360 + 360) \\,\\%\\, 360 = \begin{cases}r & \mathtt{DEGREES} \ge 0,\\\\r & \mathtt{DEGREES} < 0.\end{cases}$$
 
 Rather than use the interval of $[0, 359]$, it'll be more convenient to work around the lack of if statements by using the interval $[{-179}, 180]$.
 Thankfully we can use the trigonometric identity
@@ -148,7 +154,8 @@ Let's examine the line where we compute $S$:
 
 Here we first double $R$ to obtain an even number, then add $1$ to obtain an odd number.
 Calculating the remainder with $2$ then returns $1$ for positive numbers and ${-1}$ for negative numbers:
-$$S = (2R + 1) \,\%\, 2 = \begin{cases}1 & R \ge 0,\\\\{-1} & R < 0.\end{cases}$$
+
+$$S = (2R + 1) \\,\\%\\, 2 = \begin{cases}1 & R \ge 0,\\\\{-1} & R < 0.\end{cases}$$
 
 ### Finishing the Sine Computation
 
@@ -202,13 +209,17 @@ The only difference is in the line used to determine the <q>remainder</q> value 
 ```
 
 Here we use the property:
+
 $$\cos(\mathtt{DEGREES}) = \sin(90 + \mathtt{DEGREES}).$$
 
 Recall that we can write
+
 $$R = 180 - r,$$
+
 where $r$ is the unique integer such that $0 \le r \le 359$ and $r \equiv \mathtt{DEGREES} \pmod{360}$.
 Hence we have
-$$\begin{align*}\cos(\mathtt{DEGREES}) &= \sin(90 + \mathtt{DEGREES})\\\\&=\sin(90 + r)\\\\&=\sin(90 + (180 - R))\\\\&=\sin(270 - R).\end{align*}$$
+
+$$\cos(\mathtt{DEGREES}) = \sin(90 + \mathtt{DEGREES}) =\sin(90 + r) =\sin(90 + (180 - R)) =\sin(270 - R).$$
 
 Since ${{-179} \le R \le 180}$, we have ${90 \le 270 - R \le 449}$.
 This value is strictly positive, so we don't need separate reasoning for a negative number like we did for the original remainder.

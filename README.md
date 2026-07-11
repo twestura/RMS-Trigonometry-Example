@@ -157,15 +157,11 @@ Calculating the remainder with $2$ then returns $1$ for positive numbers and ${-
 
 $$S = (2R + 1) \\,\\%\\, 2 = \begin{cases}1 & R \ge 0,\\\\{-1} & R < 0.\end{cases}$$
 
+This definition of $S$ ensures that ${0 \le SR \le 180}$, satisfying the bounds required by the approximation formula to compute $\sin(SR)$.
+
 ### Finishing the Sine Computation
 
-The rest of the code consists of using the approximation formula.
-
-```text
-#const P (180 * S - R * R)
-#const D (40500 - P)
-#const SIN (S * 4 * P / D)
-```
+The rest of the code consists of using the approximation formula to compute ${S \sin(SR)}$.
 
 First let's focus on the line
 
